@@ -12,42 +12,48 @@
 
 body {
     margin: 0;
-    padding: 20px;
+    padding: 15px; /* Slightly reduced padding */
     background-color: var(--bg-color);
     color: var(--text-color);
-    font-family: 'Press Start 2P';/*, cursive;*/ 
-    height: 100vh;
+    font-family: 'Press Start 2P'; 
+    height: 100vh; /* Lock to viewport height */
     box-sizing: border-box;
-    /*overflow: hidden;*/
+    display: flex;
+    flex-direction: column; /* Stacks Marquee -> Grid -> Footer */
+    overflow: hidden; /* Prevent global scroll */
 }
 
 #scrolltxt {
-    font-family: 'Press Start 2P',cursive;
+    font-family: 'Press Start 2P', cursive;
     color: #39ff14;
-    font-size: 30px;
-    text-shadow: 0 0 30px var(--neon-green);
+    font-size: 20px; /* Reduced slightly for fit */
+    text-shadow: 0 0 20px var(--neon-green);
     border: 2px solid var(--neon-purple);
-    padding: 10px 30px;
-    margin-bottom: 40px;
-    box-shadow:0 0 30px var(--neon-purple); ;
+    padding: 10px;
+    margin-bottom: 15px; /* Reduced from 40px */
+    box-shadow: 0 0 20px var(--neon-purple); 
+    flex: 0 0 auto; /* Keep it at its natural height */
 }
 
 .Grids {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr; 
-    gap: 20px; 
-    height: 100%;
+    gap: 15px; 
+    flex: 1; /* This takes up all available space between header and footer */
+    min-height: 0; /* Important: allows grid items to shrink below content size */
     width: 100%;
+    margin-bottom: 15px;
 }
 
 .panel {
     background-color: var(--panel-bg);
     border: var(--border-style);
-    padding: 20px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 0 30px var(--neon-purple); 
+    box-shadow: 0 0 20px var(--neon-purple); 
+    overflow: hidden; /* Keep content inside panels */
 }
 
 .panel-title {
@@ -102,15 +108,18 @@ body {
 }
 
 .sprite-stage {
-    flex-grow: 1; 
+    flex: 1; 
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 0; /* Allows image to scale down */
 }
 
 #buddy-sprite {
-    width: 100%; 
-    max-width: 350px;
+    max-height: 100%; /* Prevents sprite from pushing panel height */
+    max-width: 100%;
+    height: auto;
+    width: auto;
     image-rendering: pixelated; 
 }
 
@@ -144,7 +153,10 @@ body {
 .list {
     list-style: none;
     padding: 0;
+    margin: 0;
     overflow-y: auto; 
+    flex: 1; /* List grows to fill the panel height */
+    width: 100%;
 }
 
 .list li {
@@ -188,12 +200,37 @@ body {
     opacity: 0.4;
 }
 
-#footer{
+#footer {
     background-color: #000;
     border: 2px solid var(--neon-purple);
-    padding: 10px 30px;
-    margin-bottom: 40px;
+    padding: 5px 20px;
     text-shadow: 0 0 10px var(--neon-green);
-    font-family: 'Press Start 2P',cursive;
-    box-shadow:0 0 5px var(--neon-purple);
+    font-family: 'Press Start 2P', cursive;
+    box-shadow: 0 0 5px var(--neon-purple);
+    flex: 0 0 auto; /* Fixed height footer */
+    text-align: center;
+    font-size: 10px;
+}
+
+#footer p {
+    margin: 5px 0;
+}
+
+.xp-container {
+    width: 80%;
+    height: 15px;
+    background-color: #000;
+    border: 2px solid var(--neon-blue);
+    margin-top: 10px;
+    box-shadow: 0 0 10px var(--neon-blue);
+    position: relative;
+    overflow: hidden;
+}
+
+#xp-bar-fill {
+    width: 0%; /* This will be updated by JS */
+    height: 100%;
+    background-color: var(--neon-green);
+    box-shadow: 0 0 15px var(--neon-green);
+    transition: width 0.5s ease-in-out;
 }

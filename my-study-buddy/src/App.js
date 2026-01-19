@@ -50,31 +50,47 @@ function App() {
     setTaskInput("");
   };
 
+  const handleReset = () => {
+  setIsActive(false); 
+  setTimeLeft(1500);  
+ };
+
   const handleDelTask = async (id) => {
     await fetch(`http://localhost:5000/tasks/${id}`, { method: 'DELETE' });
     setTasks(tasks.filter(t => t.id !== id));
     
-    // Level Up Logic
+  
     const xpRes = await fetch('http://localhost:5000/complete-task', { method: 'POST' });
     const stats = await xpRes.json();
     setBuddyInfo(prev => ({ ...prev, lvl: stats.level, xp: stats.xp }));
   };
 
   return (
-    <div className="arcade-grid">
+  <div className="arcade-window">
+    
+    <marquee id="scrolltxt" behavior="scroll" direction="left"> 
+        ~~~~~~ *:･ﾟ✧\(◕ヮ◕\) Make it a Productive Day! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ~~~~~~ 
+    </marquee> 
+
+    
+    <div className="panel-container">
       <section className="panel">
+        <h2>TIMER</h2>
         <h1>{Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}</h1>
         <button onClick={() => setIsActive(true)}>START</button>
         <button onClick={() => setIsActive(false)}>PAUSE</button>
+        <button onClick={handleReset}>RESET</button>
       </section>
 
       <section className="panel">
+        <h2>YOUR_COMPANION</h2>
         <img src={buddyInfo.img} alt="buddy" />
         <p>{buddyInfo.status}</p>
         <p>LVL: {buddyInfo.lvl} | XP: {buddyInfo.xp}/100</p>
       </section>
 
       <section className="panel">
+        <h2>ACTIVE_TASKS</h2>
         <input 
           value={taskInput} 
           onChange={(e) => setTaskInput(e.target.value)} 
@@ -90,7 +106,11 @@ function App() {
         </ul>
       </section>
     </div>
-  );
+    <footer id="footer">
+        <p> &copy; stay productive!(❁´◡`❁) </p>
+    </footer>  
+  </div>
+);
 }
 
 export default App;
