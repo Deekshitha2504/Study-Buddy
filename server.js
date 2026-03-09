@@ -1,7 +1,6 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
-const path = require('path');
 
 const app = express();
 const db = new sqlite3.Database('./database.sqlite');
@@ -89,4 +88,13 @@ app.post('/timer-state', (req, res) => {
 });
 
 // Start server
-app.listen(5000, () => console.log('Server running at http://localhost:5000'));
+// Dynamic Port for Deployment
+const PORT = process.env.PORT || 5000;
+
+// Persistent Database Path for Railway
+const path = require('path');
+const dbPath = process.env.RAILWAY_VOLUME_MOUNT_PATH 
+  ? path.join(process.env.RAILWAY_VOLUME_MOUNT_PATH, 'database.db') 
+  : path.join(__dirname, 'database.db');
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
