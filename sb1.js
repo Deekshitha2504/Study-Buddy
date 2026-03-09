@@ -14,29 +14,36 @@ function updateStatsUI(level, xp) {
     if(xpBar) xpBar.style.width = `${xp}%`;
 }
 
-function updateTimerDisplay() {
+function updateDisplay() {
     let minutes = Math.floor(timeLeft / 60);
     let seconds = timeLeft % 60;
-    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    const timerdisplay = document.getElementById('timerdisplay');
+    if (timerdisplay) {
+        timerdisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
 }
 
 // --- INITIAL LOAD ---
 window.onload = async () => {
-    // Load Tasks
-    const tRes = await fetch('/tasks');
-    const tasks = await tRes.json();
-    tasks.forEach(t => renderTask(t.task, t.id));
+    try {
+        // Load Tasks
+        const tRes = await fetch('/tasks');
+        const tasks = await tRes.json();
+        tasks.forEach(t => renderTask(t.task, t.id));
 
-    // Load Timer
-    const timeRes = await fetch('/timer-state');
-    const state = await timeRes.json();
-    timeLeft = state.time_left;
-    updateTimerDisplay();
+        // Load Timer
+        const timeRes = await fetch('/timer-state');
+        const state = await timeRes.json();
+        timeLeft = state.time_left || 1500;
+        updateDisplay(); // FIXED: Changed from updateTimerDisplay
 
-    // Load Stats
-    const sRes = await fetch('/stats');
-    const stats = await sRes.json();
-    updateStatsUI(stats.level, stats.xp);
+        // Load Stats
+        const sRes = await fetch('/stats');
+        const stats = await sRes.json();
+        updateStatsUI(stats.level, stats.xp);
+    } catch (err) {
+        console.log("Initial load error (Server might be down):", err);
+    }
 };
 
 // --- TASK FUNCTIONS ---
@@ -79,24 +86,48 @@ async function delTask(id, buttonElement) {
 }
 
 // --- TIMER FUNCTIONS ---
+// --- TIMER FUNCTIONS ---
 function sTimer() {
     if (timer !== null) return;
     buddy.src = "c1.gif"; 
-    timer = setInterval(async () => {
+    // We remove 'async' here because we don't need it for the interval itself
+    timer = setInterval(() => {
         if (timeLeft > 0) {
             timeLeft--;
-            updateTimerDisplay();
+            updateDisplay(); // FIXED: Changed from updateTimerDisplay
             if (timeLeft % 10 === 0) syncTimer();
         } else {
             stopTimerLogic();
+            buddy.src = "2c.gif";
+            buddyStatus.innerText = "Great job!";
             alert("Done!");
         }
     }, 1000);
 }
 
+function pTimer() {
+    stopTimerLogic(); 
+    syncTimer();      
+    buddy.src = "3c.gif"; 
+    buddyStatus.innerText = "Paused. Ready to continue?";
+}
+
+function reTimer() {
+    stopTimerLogic();
+    timeLeft = 1500;   
+    updateDisplay();   // FIXED: This ensures the screen shows 25:00 immediately
+    syncTimer();       
+    
+    buddy.src = "3c.gif";
+    buddyStatus.innerText = "Timer reset. Let's go again!";
+}
+
+
 function stopTimerLogic() {
-    clearInterval(timer);
-    timer = null;
+    if (timer !== null) {
+        clearInterval(timer);
+        timer = null;
+    }
 }
 
 async function syncTimer() {
