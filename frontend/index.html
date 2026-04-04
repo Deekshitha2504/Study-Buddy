@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Study Buddy</title>
+    <link rel="stylesheet" href="sb1.css">
+</head>
+
+<body>
+    <marquee id="scrolltxt" behavior="scroll" direction="left">
+        ~~~~~~ *:･ﾟ✧\(◕ヮ◕\) Make it a Productive Day! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ~~~~~~
+    </marquee>
+
+    <div class="Grids">
+        <section class="panel">
+            <h2 class="panel-title">TIMER</h2>
+            <div class="lcd-display">
+                <h1 id="timerdisplay">25:00</h1>
+            </div>
+            <div class="button-group">
+                <button class="btn start" onclick="sTimer()">START</button>
+                <button class="btn pause" onclick="pTimer()">PAUSE</button>
+                <button class="btn reset" onclick="reTimer()">RESET</button>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2 class="panel-title">STUDY BUDDY</h2>
+            <div class="sprite-stage">
+                <img id="buddy-sprite" src="3c.gif" alt="buddy">
+            </div>
+            <p id="buddy-status">Ready to start?</p>
+            <div class="xp-container">
+                <div id="xp-bar-fill"></div>
+            </div>
+        </section>
+
+        <section class="panel task-panel">
+            <h2 class="panel-title">QUESTS</h2>
+            <div class="task-input-group">
+                <input id="taskInput" class="input" placeholder="New Quest...">
+                <button class="addbtn" onclick="addTask()">[+]</button>
+            </div>
+            <ul id="taskList" class="list"></ul>
+        </section>
+    </div>
+
+    <footer id="footer">
+        <p>TERMINAL: ACTIVE | SYSTEM STATUS: OPTIMAL</p>
+    </footer>
+
+    <script src="sb1.js"></script>
+</body>
+
+</html>

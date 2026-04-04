@@ -8,10 +8,12 @@ const taskInput = document.getElementById('taskInput');
 const taskList = document.getElementById('taskList');
 const xpBar = document.getElementById('xp-bar-fill');
 
+const API_BASE_URL = 'http://localhost:5000';
+
 // --- UI HELPER ---
 function updateStatsUI(level, xp) {
     buddyStatus.innerText = `LVL: ${level} | XP: ${xp}/100`;
-    if(xpBar) xpBar.style.width = `${xp}%`;
+    if (xpBar) xpBar.style.width = `${xp}%`;
 }
 
 function updateDisplay() {
@@ -27,18 +29,18 @@ function updateDisplay() {
 window.onload = async () => {
     try {
         // Load Tasks
-        const tRes = await fetch('/tasks');
+        const tRes = await fetch(`${API_BASE_URL}/tasks`);
         const tasks = await tRes.json();
         tasks.forEach(t => renderTask(t.task, t.id));
 
         // Load Timer
-        const timeRes = await fetch('/timer-state');
+        const timeRes = await fetch(`${API_BASE_URL}/timer-state`);
         const state = await timeRes.json();
         timeLeft = state.time_left || 1500;
         updateDisplay(); // FIXED: Changed from updateTimerDisplay
 
         // Load Stats
-        const sRes = await fetch('/stats');
+        const sRes = await fetch(`${API_BASE_URL}/stats`);
         const stats = await sRes.json();
         updateStatsUI(stats.level, stats.xp);
     } catch (err) {
@@ -51,7 +53,7 @@ async function addTask() {
     const text = taskInput.value.trim();
     if (!text) return;
 
-    const response = await fetch('/tasks', {
+    const response = await fetch(`${API_BASE_URL}/tasks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ task: text })
@@ -72,14 +74,14 @@ function renderTask(text, id) {
 
 async function delTask(id, buttonElement) {
     // 1. Delete from SQL
-    const response = await fetch(`/tasks/${id}`, { method: 'DELETE' });
+    const response = await fetch(`${API_BASE_URL}/tasks/${id}`, { method: 'DELETE' });
     if (response.ok) {
         buttonElement.parentElement.remove();
-        
+
         // 2. Add XP
-        const xpRes = await fetch('/complete-task', { method: 'POST' });
+        const xpRes = await fetch(`${API_BASE_URL}/complete-task`, { method: 'POST' });
         const stats = await xpRes.json();
-        
+
         // 3. Update Bar
         updateStatsUI(stats.level, stats.xp);
     }
@@ -89,7 +91,7 @@ async function delTask(id, buttonElement) {
 // --- TIMER FUNCTIONS ---
 function sTimer() {
     if (timer !== null) return;
-    buddy.src = "c1.gif"; 
+    buddy.src = "c1.gif";
     // We remove 'async' here because we don't need it for the interval itself
     timer = setInterval(() => {
         if (timeLeft > 0) {
@@ -106,18 +108,18 @@ function sTimer() {
 }
 
 function pTimer() {
-    stopTimerLogic(); 
-    syncTimer();      
-    buddy.src = "3c.gif"; 
+    stopTimerLogic();
+    syncTimer();
+    buddy.src = "3c.gif";
     buddyStatus.innerText = "Paused. Ready to continue?";
 }
 
 function reTimer() {
     stopTimerLogic();
-    timeLeft = 1500;   
+    timeLeft = 1500;
     updateDisplay();   // FIXED: This ensures the screen shows 25:00 immediately
-    syncTimer();       
-    
+    syncTimer();
+
     buddy.src = "3c.gif";
     buddyStatus.innerText = "Timer reset. Let's go again!";
 }
@@ -131,7 +133,7 @@ function stopTimerLogic() {
 }
 
 async function syncTimer() {
-    await fetch('/timer-state', {
+    await fetch(`${API_BASE_URL}/timer-state`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ time_left: timeLeft })
